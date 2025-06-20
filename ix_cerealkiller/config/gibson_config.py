@@ -1,15 +1,18 @@
 """
-Configuration for connecting IX-CerealKiller to the IX-Gibson API.
+Gibson Configuration — IX-CerealKiller
+
+Defines communication parameters for connecting IX-CerealKiller
+to the IX-Gibson central intelligence node.
 """
 
-# Gibson API endpoint
+# IX-Gibson API endpoint URL
 GIBSON_API_URL = "http://localhost:9000/api/query"
 
-# Timeout for HTTP requests to Gibson
+# Timeout for API requests (seconds)
 REQUEST_TIMEOUT_SECONDS = 5
 
-# Number of retry attempts for failed connections
+# Retry attempts for failed requests
 RETRY_ATTEMPTS = 3
 
-# Time to wait between retries
+# Backoff interval between retries (seconds)
 RETRY_BACKOFF_SECONDS = 2
