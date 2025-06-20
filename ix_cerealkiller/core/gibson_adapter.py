@@ -1,7 +1,8 @@
 """
 IX-CerealKiller Gibson Adapter
 
-Enables communication between IX-CerealKiller AI and IX-Gibson central knowledge system.
+Facilitates communication with IX-Gibson, allowing CerealKiller to
+forward queries and receive domain-specific insights.
 """
 
 import requests
@@ -10,37 +11,37 @@ from config.gibson_config import GIBSON_API_URL, REQUEST_TIMEOUT_SECONDS, RETRY_
 
 class GibsonAdapter:
     def __init__(self):
-        self.api_url = GIBSON_API_URL
+        self.endpoint = GIBSON_API_URL
         self.timeout = REQUEST_TIMEOUT_SECONDS
         self.retries = RETRY_ATTEMPTS
         self.backoff = RETRY_BACKOFF_SECONDS
 
-    def query_gibson(self, question: str) -> dict:
+    def query_gibson(self, query: str) -> dict:
         """
-        Query IX-Gibson with the given question and return JSON response.
+        Send a query to IX-Gibson and return parsed JSON response.
 
         Args:
-            question (str): The question string.
+            query (str): User or system query string.
 
         Returns:
-            dict: Response JSON or error details.
+            dict: Parsed response or error information.
         """
         payload = {
             "domain": "cerealkiller",
-            "question": question,
-            "from": "ix-cerealkiller"
+            "query": query,
+            "source": "ix-cerealkiller"
         }
         for attempt in range(1, self.retries + 1):
             try:
-                response = requests.post(self.api_url, json=payload, timeout=self.timeout)
+                response = requests.post(self.endpoint, json=payload, timeout=self.timeout)
                 if response.status_code == 200:
                     return response.json()
                 else:
-                    print(f"Gibson HTTP {response.status_code}: {response.text}")
+                    print(f"[CerealKiller HTTP {response.status_code}] {response.text}")
             except requests.RequestException as e:
-                print(f"Gibson request error attempt {attempt}: {e}")
+                print(f"[CerealKiller] Gibson request error (attempt {attempt}): {e}")
 
             if attempt < self.retries:
                 time.sleep(self.backoff)
 
-        return {"error": "Failed to communicate with IX-Gibson after retries."}
+        return {"error": "Failed to retrieve response from IX-Gibson after retries."}
